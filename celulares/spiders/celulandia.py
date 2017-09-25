@@ -2,9 +2,8 @@
 import scrapy
 import json
 
-
-class CelularesSpider(scrapy.Spider):
-	name = "celulares"
+class CelulandiaSpider(scrapy.Spider):
+	name = "celulandia"
 	base_url = 'https://celulandia.com.mx'
 	start_urls = ['https://celulandia.com.mx/collections/all']
 
@@ -25,13 +24,12 @@ class CelularesSpider(scrapy.Spider):
 		producto = response.selector.xpath('.//script[@type="application/json"]/text()').extract_first()
 		producto = producto.strip()
 		producto = json.loads(producto)
-
 		item = {
-			'name': response.css('h1::text').extract_first(),
-			'price': response.css('p.product-prices span.product-price::text').extract_first(),
-			'images': response.css('div.thumbnails a::attr(href)').extract(),
-			'description': response.css('div.rte p::text').extract_first(),
-			# 'attribute_name': attribute_name,
-			# 'attribute_options': attribute_options
+			'id': producto.get('id'),
+			'nombre': producto.get('title'),
+			'precio': producto.get('price') / 100,
+			'imagenes': producto.get('images'),
+			'descripcion': producto.get('content'),
+			'marca': producto.get('vendor')
 		}
-		yield producto
+		yield item
